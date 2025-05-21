@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>两步验证 - AI艺境画廊</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center mb-4 text-gray-800">邮箱验证</h2>
+    <p class="text-sm text-gray-500 text-center mb-6">为保护账户安全，请输入发送至你的邮箱的验证码</p>
+    <form class="space-y-4">
+      <div>
+        <label class="block text-gray-700 mb-1">验证码</label>
+        <input type="text" placeholder="请输入6位验证码" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">验证</button>
+    </form>
+    <div class="mt-4 text-sm text-gray-500 text-center">
+      没有收到验证码？<a href="#" class="text-indigo-600 hover:underline">重新发送</a>
+    </div>
+  </div>
+</body>
+</html>

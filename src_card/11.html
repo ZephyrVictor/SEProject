@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发布到社区 - AI艺境画廊</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-8">
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">发布作品到社区</h2>
+    <form class="space-y-5">
+      <div>
+        <label class="block mb-1 text-gray-700 font-medium">选择作品</label>
+        <select class="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500">
+          <option>版本 #3 - 法国绘本风格</option>
+          <option>版本 #2 - 去水印 + 超分</option>
+        </select>
+      </div>
+      <div>
+        <label class="block mb-1 text-gray-700 font-medium">作品标题</label>
+        <input type="text" placeholder="输入作品名称" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="block mb-1 text-gray-700 font-medium">作品描述</label>
+        <textarea rows="3" placeholder="介绍你的作品创作背景或风格" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"></textarea>
+      </div>
+      <div class="flex items-start gap-4">
+        <label class="flex items-center text-sm text-gray-600">
+          <input type="checkbox" class="mr-2 accent-indigo-600" checked>
+          允许他人收藏
+        </label>
+        <label class="flex items-center text-sm text-gray-600">
+          <input type="checkbox" class="mr-2 accent-indigo-600">
+          允许他人下载
+        </label>
+        <label class="flex items-center text-sm text-gray-600">
+          <input type="checkbox" class="mr-2 accent-indigo-600">
+          允许他人再创作
+        </label>
+      </div>
+      <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">发布到社区</button>
+    </form>
+  </div>
+</body>
+</html>

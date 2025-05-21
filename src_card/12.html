@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社区作品详情 - AI艺境画廊</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-6 min-h-screen">
+  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow p-6">
+    <div class="mb-4">
+      <img src="https://via.placeholder.com/600x350" alt="社区作品" class="w-full rounded-xl">
+    </div>
+    <div class="mb-4">
+      <h2 class="text-xl font-bold text-gray-800">法国绘本风格·童话森林</h2>
+      <p class="text-sm text-gray-500">由 @lily 发布 · 2025-04-21</p>
+    </div>
+    <div class="flex gap-4 items-center mb-6 text-sm text-gray-600">
+      <button class="flex items-center hover:text-red-500">
+        ❤️ <span class="ml-1">点赞（128）</span>
+      </button>
+      <button class="hover:text-indigo-600">
+        💬 评论（24）
+      </button>
+      <button class="hover:text-yellow-500">
+        ⭐ 收藏
+      </button>
+    </div>
+
+    <div class="border-t pt-4 mt-4">
+      <h3 class="font-semibold text-gray-700 mb-2">最新评论</h3>
+      <div class="space-y-4 text-sm text-gray-700">
+        <div>
+          <p><span class="font-semibold">@dreamer</span>：太喜欢这个风格了！感觉像插画集！</p>
+          <p class="text-gray-400 text-xs">3分钟前</p>
+        </div>
+        <div>
+          <p><span class="font-semibold">@nightfox</span>：能不能开放下载呀，我想印成书签！</p>
+          <p class="text-gray-400 text-xs">10分钟前</p>
+        </div>
+      </div>
+      <form class="mt-4 flex gap-2">
+        <input type="text" placeholder="添加评论..." class="flex-grow px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">发送</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
