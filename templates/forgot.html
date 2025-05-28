@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>忘记密码 - AI画廊</title>
+</head>
+<body class="bg-primary-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold text-primary-600 mb-6 text-center">忘记密码</h2>
+    <form id="forgotForm" class="space-y-4">
+      <input id="email" type="email" required placeholder="邮箱"
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"/>
+      <button type="submit"
+        class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">发送重置邮件</button>
+    </form>
+    <p id="msg" class="mt-4 text-center text-green-600"></p>
+  </div>
+  <script>
+    document.getElementById('forgotForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const em = document.getElementById('email').value;
+      const msg = document.getElementById('msg');
+      try {
+        let res = await fetch('/api/password/forgot',{method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email:em})});
+        if (!res.ok) throw await res.json();
+        msg.textContent = '邮件已发送，请查收';
+      } catch(err) {
+        msg.textContent = err.error||'发送失败';
+      }
+    });
+  </script>
+</body>
+</html>

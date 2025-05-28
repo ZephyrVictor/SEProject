@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>注册 - AI画廊</title>
+</head>
+<body class="bg-primary-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold text-primary-600 mb-6 text-center">注册</h2>
+    <form id="registerForm" class="space-y-4">
+      <input id="email" type="email" required placeholder="邮箱"
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"/>
+      <input id="password" type="password" required placeholder="密码"
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"/>
+      <button type="submit"
+        class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">注册</button>
+    </form>
+    <p class="mt-4 text-center text-sm">
+      已有账号？<a href="login.html" class="text-primary-600 hover:underline">登录</a>
+    </p>
+    <p id="msg" class="mt-2 text-center text-red-600"></p>
+  </div>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const em = document.getElementById('email').value;
+      const pw = document.getElementById('password').value;
+      const msg = document.getElementById('msg');
+      try {
+        let res = await fetch('/api/register',{method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email:em,password:pw})});
+        if (!res.ok) throw await res.json();
+        location.href='login.html';
+      } catch(err) {
+        msg.textContent = err.error||'注册失败';
+      }
+    });
+  </script>
+</body>
+</html>

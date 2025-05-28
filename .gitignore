@@ -1,0 +1,77 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Output of the go coverage tool
+*.coverprofile
+*.cov
+*.cover
+
+# Go workspace file (Go 1.18+)
+go.work
+go.work.sum
+
+# Dependency directories (if using Go modules)
+vendor/
+
+# Logs and debugging
+*.log
+*.tmp
+*.bak
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Redis & MySQL local data
+dump.rdb
+*.pid
+*.sock
+*.cnf
+
+# Docker related
+*.env
+.env.*
+docker-compose.override.yml
+
+# Compiled static assets
+/assets/*
+!/assets/*.go
+/public/*
+!/public/*.html
+
+# Coverage reports
+coverage.out
+
+# JetBrains GoLand settings (if any)
+.idea/
+
+# Local build
+bin/
+build/
+
+# Cache
+__pycache__/
+.cache/
+*.pyc
+
+# node modules if frontend embedded
+node_modules/
+dist/
+
+# Secret config (optional, if applicable)
+config/local.yaml
+config/*.local.*
+
