@@ -55,3 +55,31 @@ func (m *SimpleMailer) SendResetEmail(to, token string, ttl time.Duration) error
 
 	return msg.Send(smtpClient)
 }
+
+func (m *SimpleMailer) SendVerificationEmail(to, token string) error {
+	server := mail.NewSMTPClient()
+	server.Host = m.SMTPConf.Host
+	server.Port = m.SMTPConf.Port
+	server.Username = m.SMTPConf.User
+	server.Password = m.SMTPConf.Password
+	server.Encryption = mail.EncryptionSTARTTLS
+	server.ConnectTimeout = 10 * time.Second
+	server.SendTimeout = 10 * time.Second
+
+	smtpClient, err := server.Connect()
+	if err != nil {
+		return fmt.Errorf("SMTP connect failed: %w", err)
+	}
+
+	message := token
+
+	msg := mail.NewMSG()
+	msg.SetFrom("系统通知 <"+m.From+">").
+		AddTo(to).
+		SetSubject("邮箱验证").
+		SetBody(mail.TextPlain,
+			fmt.Sprintf("请输入您的激活验证码\n%s", message),
+		)
+
+	return msg.Send(smtpClient)
+}

@@ -11,6 +11,7 @@ import (
 func main() {
 	cfg := config.LoadConfig()
 	logger := utils.InitLogger()
+	
 	defer logger.Sync()
 
 	r := router.SetupRouter(cfg, logger)

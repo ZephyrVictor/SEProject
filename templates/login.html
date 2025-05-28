@@ -1,46 +1,71 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <title>登录 - AI画廊</title>
 </head>
-<body class="bg-primary-50 flex items-center justify-center min-h-screen">
+<body class="bg-purple-50 flex items-center justify-center min-h-screen">
   <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-    <h2 class="text-2xl font-bold text-primary-600 mb-6 text-center">登录</h2>
+    <h2 class="text-2xl font-bold text-purple-600 mb-6 text-center">登录</h2>
     <form id="loginForm" class="space-y-4">
       <input id="email" type="email" required placeholder="邮箱"
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"/>
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"/>
       <input id="password" type="password" required placeholder="密码"
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"/>
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"/>
       <button type="submit"
-        class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">登录</button>
+        class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">登录</button>
     </form>
     <p class="mt-4 text-center text-sm">
-      <a href="forgot.html" class="text-primary-600 hover:underline">忘记密码？</a>
+      <a href="forgot.html" class="text-purple-600 hover:underline">忘记密码？</a>
       &nbsp;|&nbsp;
-      <a href="register.html" class="text-primary-600 hover:underline">注册</a>
+      <a href="register.html" class="text-purple-600 hover:underline">注册</a>
     </p>
     <p id="msg" class="mt-2 text-center text-red-600"></p>
   </div>
   <script>
-    document.getElementById('loginForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const em = document.getElementById('email').value;
-      const pw = document.getElementById('password').value;
-      const msg = document.getElementById('msg');
-      try {
-        let res = await fetch('/api/login',{method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({email:em,password:pw})});
-        const data = await res.json();
-        if (!res.ok) throw data;
-        localStorage.setItem('token', data.token);
-        location.href='login.html'; // 或首页
-      } catch(err) {
-        msg.textContent = err.error||'登录失败';
-      }
-    });
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const res = await fetch('/api/login', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value
+    })
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    document.getElementById('msg').textContent = data.error;
+    return;
+  }
+  // 登录成功后手动跳转
+  location.href = '/';
+});
   </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>登录 - AI画廊</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold text-purple-600 mb-6 text-center">登录</h2>
+    <form method="POST" action="/login" class="space-y-4">
+      <input name="email" type="email" required placeholder="邮箱"
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"/>
+      <input name="password" type="password" required placeholder="密码"
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"/>
+      <button type="submit"
+        class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">登录</button>
+    </form>
+    {{ if .error }}
+    <p class="mt-4 text-center text-red-600">{{ .error }}</p>
+    {{ end }}
+  </div>
 </body>
 </html>

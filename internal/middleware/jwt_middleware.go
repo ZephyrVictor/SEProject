@@ -13,7 +13,7 @@ func JWTAuth(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		auth := c.GetHeader("Authorization")
 		if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "请输入您的身份"})
 			return
 		}
 		tokenString := strings.TrimPrefix(auth, "Bearer ")
@@ -23,7 +23,7 @@ func JWTAuth(cfg *config.Config) gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "您的身份无效"})
 		}
 
 		claims := token.Claims.(jwt.MapClaims)

@@ -25,7 +25,6 @@ type PasswordService struct {
 }
 
 func NewPasswordService(cfg *config.Config) *PasswordService {
-	cfg = config.LoadConfig()
 	mailConf := mailer.SMTPConfig{
 		Host:     cfg.SMTPHost,
 		Port:     cfg.SMTPPort,
@@ -60,7 +59,7 @@ func (s *PasswordService) Reset(ctx context.Context, email, token, newPwd string
 	key := "pwd_reset:" + email
 	val, err := s.rdb.Get(ctx, key).Result()
 	if err != nil || val != token {
-		return errors.New("invalid or expired token")
+		return errors.New("申请无效或已经过期")
 	}
 	hash, _ := bcrypt.GenerateFromPassword([]byte(newPwd), bcrypt.DefaultCost)
 	if err := s.db.Model(&models.User{}).
@@ -70,4 +69,8 @@ func (s *PasswordService) Reset(ctx context.Context, email, token, newPwd string
 	}
 	s.rdb.Del(ctx, key)
 	return nil
+}
+
+func (s *PasswordService) SendVerificationEmail(email, code string) error {
+	return s.mailer.SendVerificationEmail(email, code)
 }
