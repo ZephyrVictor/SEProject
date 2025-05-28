@@ -19,12 +19,14 @@ func SetupRouter(cfg *config.Config, logger *zap.Logger) *gin.Engine {
 	r.Use(gin.Recovery())
 
 	// Serve static HTML
-	r.Static("/static", "./public")
-	r.GET("/", func(c *gin.Context) { c.File("./public/login.html") })
-	r.GET("/register.html", func(c *gin.Context) { c.File("./public/register.html") })
-	r.GET("/login.html", func(c *gin.Context) { c.File("./public/login.html") })
-	r.GET("/forgot.html", func(c *gin.Context) { c.File("./public/forgot.html") })
-	r.GET("/reset.html", func(c *gin.Context) { c.File("./public/reset.html") })
+	r.Static("/static", "../../templates")
+	r.GET("/", func(c *gin.Context) { c.File("../../templates/login.html") })
+	r.GET("/register.html", func(c *gin.Context) { c.File("../../templates/register.html") })
+	r.GET("/login.html", func(c *gin.Context) { c.File("../../templates/login.html") })
+	r.GET("/forgot.html", func(c *gin.Context) { c.File("../../templates/forgot.html") })
+	r.GET("/reset.html", func(c *gin.Context) { c.File("../../templates/reset.html") })
+	r.GET("/ping", func(c *gin.Context) {c.String(200, "pong")})
+
 
 	// Services & Controllers
 	authSvc := services.NewAuthService(models.DB, cfg.JWTSecret, cfg.JWTExpireHours)
