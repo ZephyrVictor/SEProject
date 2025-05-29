@@ -27,6 +27,8 @@ type Config struct {
 	SMTPPass             string
 	ResetTokenTTLMinutes int
 	BaseUrl              string
+	MaxImageWidth        int
+	MinImageWidth        int
 }
 
 func LoadConfig() *Config {
@@ -55,5 +57,7 @@ func LoadConfig() *Config {
 		SMTPPass:             viper.GetString("SMTP_PASS"),
 		ResetTokenTTLMinutes: viper.GetInt("RESET_TOKEN_TTL_MINUTES"),
 		BaseUrl:              viper.GetString("BASE_URL"),
+		MaxImageWidth:        viper.GetInt("MAX_IMAGE_WIDTH"),
+		MinImageWidth:        viper.GetInt("MIN_IMAGE_WIDTH"),
 	}
 }

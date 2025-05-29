@@ -8,7 +8,9 @@ import (
 	"go.uber.org/zap"
 
 	"awesomeProject/config"
+	"awesomeProject/internal"
 	"awesomeProject/internal/controllers"
+	"awesomeProject/internal/middleware"
 	"awesomeProject/internal/models"
 	"awesomeProject/internal/services"
 )
@@ -27,6 +29,8 @@ func SetupRouter(cfg *config.Config, logger *zap.Logger) *gin.Engine {
 
 	r := gin.New()
 	r.Use(gin.Recovery())
+	// 加载模板，用于渲染 HTML 页面
+	r.LoadHTMLGlob(filepath.Join(templatesPath, "*.html"))
 
 	// Serve static HTML
 	r.Static("/static", templatesPath)
@@ -44,7 +48,6 @@ func SetupRouter(cfg *config.Config, logger *zap.Logger) *gin.Engine {
 
 	authCtl := controllers.NewAuthController(authSvc, pwdSvc)
 
-	// JSON API
 	api := r.Group("/api")
 	{
 		api.POST("/register", authCtl.Register)
@@ -54,6 +57,27 @@ func SetupRouter(cfg *config.Config, logger *zap.Logger) *gin.Engine {
 		api.POST("/send-email-code", authCtl.SendEmailCode)
 		api.GET("/auth/status", authCtl.Status)
 		api.POST("/auth/logout", authCtl.Logout)
+		// 获取当前用户的图片列表（JSON）
+		imgQueue := services.NewTaskQueue(models.RDB)
+		imgCtl := controllers.NewImageController(imgQueue, models.DB, cfg)
+		api.GET("/images", imgCtl.ListJSON)
+	}
+	// 以下路由需要登录后访问
+	imgQueue := services.NewTaskQueue(models.RDB)
+	imgCtl := controllers.NewImageController(imgQueue, models.DB, cfg)
+	authGroup := r.Group("/")
+	authGroup.Use(middleware.JWTAuth(cfg))
+	{
+		// 图像编辑页
+		authGroup.GET("/edit.html", imgCtl.ShowEdit)
+		// 提交编辑任务
+		authGroup.POST("/api/image/edit", imgCtl.SubmitEdit)
+		// 查看历史列表
+		authGroup.GET("/history.html", imgCtl.ShowHistory)
+		// 分支详情
+		authGroup.GET("/history/:task_id", imgCtl.ShowBranch)
+		// WebSocket 连接
+		authGroup.GET("/ws", internal.HandleWs)
 	}
 
 	return r

@@ -25,6 +25,7 @@ func InitMySQL(cfg *config.Config) {
 	}
 	DB = db
 	DB.AutoMigrate(&User{}, &Image{}, &Task{}, &Favorite{})
+	MigrateTask(DB)
 }
 
 func InitRedis(cfg *config.Config) {

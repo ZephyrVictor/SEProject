@@ -1,8 +1,8 @@
-<!-- filepath: [index.html](http://_vscodecontentref_/1) -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>AI画廊 - 首页</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -10,63 +10,101 @@
   <header class="bg-white shadow">
     <div class="container mx-auto px-6 py-4 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-purple-600">AI画廊</h1>
-      <div id="userAction"></div>
+      <div class="flex items-center space-x-4">
+        <div id="userAction"></div>
+        <!-- 新建编辑入口 -->
+        <a href="/edit.html"
+           class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+          新建编辑
+        </a>
+      </div>
     </div>
   </header>
+
   <main class="container mx-auto px-6 py-8">
     <h2 id="galleryTitle" class="text-2xl font-bold text-gray-800 mb-6">作品展示</h2>
     <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
   </main>
 
-  <script>
-    (async function() {
-      const res = await fetch('/api/auth/status');
-      const { authenticated, email } = await res.json();
-      const userAction = document.getElementById('userAction');
+  <footer class="bg-white shadow mt-8">
+    <div class="container mx-auto px-6 py-4 text-center text-gray-600">© 2025 AI画廊</div>
+  </footer>
 
-      if (authenticated) {
-        userAction.innerHTML = `
-          <div class="relative">
-            <button id="userBtn" class="text-gray-700 focus:outline-none">${email}</button>
-            <div id="logoutMenu" class="hidden absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg">
-              <button id="logoutBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100">退出登录</button>
-            </div>
-          </div>`;
-        document.getElementById('userBtn').addEventListener('click', () => {
-          document.getElementById('logoutMenu').classList.toggle('hidden');
-        });
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-          await fetch('/auth/logout', {
-          method: 'POST',
+  <script>
+  (async function() {
+    // 1. 获取登录状态
+    const statusRes = await fetch('/api/auth/status', {
+      credentials: 'same-origin'
+    });
+    const { authenticated, email } = await statusRes.json();
+    const userAction = document.getElementById('userAction');
+
+    // 2. 根据状态渲染顶部用户区
+    if (authenticated) {
+      userAction.innerHTML = `
+        <div class="relative">
+          <button id="userBtn" class="text-gray-700 focus:outline-none">${email}</button>
+          <div id="logoutMenu" class="hidden absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg">
+            <button id="logoutBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100">退出登录</button>
+          </div>
+        </div>`;
+      document.getElementById('userBtn').onclick = () => {
+        document.getElementById('logoutMenu').classList.toggle('hidden');
+      };
+      document.getElementById('logoutBtn').onclick = async () => {
+        await fetch('/api/auth/logout', {
+          method: 'POST', credentials: 'same-origin'
         });
         location.href = '/';
+      };
+    } else {
+      userAction.innerHTML = `
+        <a href="/login.html"
+           class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+          登录
+        </a>`;
+    }
 
-        });
+    // 3. 加载画廊图片
+    const gallery = document.getElementById('gallery');
+    if (authenticated) {
+      // 真正调用后端 /api/images 接口
+      const imgRes = await fetch('/api/images', {
+        credentials: 'same-origin'
+      });
+      const { images } = await imgRes.json();
+
+      if (images.length === 0) {
+        // 无作品提示
+        gallery.innerHTML = `
+          <div class="col-span-full text-center text-gray-500">
+            您当前还没有图片，快立即上传吧
+          </div>`;
       } else {
-        userAction.innerHTML = `
-          <a href="/login.html"
-            class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-            登录
-          </a>`;
+        // 渲染用户作品
+        gallery.innerHTML = '';
+        images.forEach(img => {
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-lg shadow overflow-hidden';
+          card.innerHTML = `
+            <img src="${img.url}" class="w-full h-48 object-cover">
+            <div class="p-4">
+              <h3 class="text-lg font-semibold">${img.id}</h3>
+              <div class="text-sm text-gray-500 mt-1">状态：${img.status}</div>
+            </div>`;
+          gallery.appendChild(card);
+        });
       }
-
-      const images = authenticated
-        ? [
-            { src: 'https://zephyr369.online/img/avatar.png', title: '我的作品 1' },
-            { src: 'https://iili.io/2pVlUKP.md.jpg', title: '我的作品 2' },
-            { src: 'https://raw.githubusercontent.com/Yutori-Natsu/Yutori-Natsu.github.io/main/assets/ava.jpeg', title: '我的作品 3' },
-          ]
-        : [
-            { src: 'https://via.placeholder.com/300', title: '推荐作品 1' },
-            { src: 'https://via.placeholder.com/300', title: '推荐作品 2' },
-            { src: 'https://via.placeholder.com/300', title: '推荐作品 3' },
-          ]
-
-      document.getElementById('galleryTitle').textContent =
-        authenticated ? '我的作品' : '推荐作品';
-
-      const gallery = document.getElementById('gallery');
-      images.forEach(img => {
+      document.getElementById('galleryTitle').textContent = '我的作品';
+    } else {
+      // 未登录时显示推荐占位
+      const placeholder = [
+        { src: 'https://via.placeholder.com/300', title: '推荐作品 1' },
+        { src: 'https://via.placeholder.com/300', title: '推荐作品 2' },
+        { src: 'https://via.placeholder.com/300', title: '推荐作品 3' },
+      ];
+      gallery.innerHTML = '';
+      placeholder.forEach(img => {
         const card = document.createElement('div');
         card.className = 'bg-white rounded-lg shadow overflow-hidden';
         card.innerHTML = `
@@ -76,10 +114,9 @@
           </div>`;
         gallery.appendChild(card);
       });
-    })();
+      document.getElementById('galleryTitle').textContent = '推荐作品';
+    }
+  })();
   </script>
 </body>
-  <footer class="bg-white shadow mt-8">
-    <div class="container mx-auto px-6 py-4 text-center text-gray-600">© 2025 AI画廊</div>
-  </footer>
 </html>

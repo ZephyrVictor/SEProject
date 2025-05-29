@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>编辑分支 - AI画廊</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-purple-50 min-h-screen">
+  <div class="container mx-auto px-6 py-6 space-y-4">
+    <h1 class="text-2xl font-bold text-purple-800">任务 {{.root.ID}}</h1>
+    <img src="{{.root.BaseImageURL}}" class="rounded-lg shadow w-64"/>
+
+    <h2 class="text-xl font-semibold text-purple-700 mt-4">历史分支</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <a href="/history/{{.root.ID}}" class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+        <div class="text-gray-600">原始</div>
+      </a>
+      {{range .branches}}
+      <a href="/history/{{.ID}}" class="bg-white p-4 rounded-lg shadow hover:shadow-lg">
+        <img src="{{.ResultURL}}" class="w-full h-32 object-cover rounded"/>
+        <div class="mt-2 text-purple-700">{{.Function}}</div>
+      </a>
+      {{end}}
+    </div>
+  </div>
+</body>
+</html>
