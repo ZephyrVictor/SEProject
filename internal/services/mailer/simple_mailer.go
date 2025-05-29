@@ -78,7 +78,7 @@ func (m *SimpleMailer) SendVerificationEmail(to, token string) error {
 		AddTo(to).
 		SetSubject("邮箱验证").
 		SetBody(mail.TextPlain,
-			fmt.Sprintf("请输入您的激活验证码\n%s", message),
+			fmt.Sprintf("请输入您的验证码\n%s", message),
 		)
 
 	return msg.Send(smtpClient)

@@ -50,19 +50,28 @@ func (ac *AuthController) Register(c *gin.Context) {
 }
 
 func (ac *AuthController) Login(c *gin.Context) {
-	// 从表单获取
-	email := c.PostForm("email")
-	password := c.PostForm("password")
-	token, err := ac.authSvc.Login(email, password)
-	if err != nil {
-		// 登录失败重回登录页并带错误信息
-		c.HTML(http.StatusUnauthorized, "login.html", gin.H{"error": err.Error()})
+	// 按前端 fetch/json 提交改写，不再渲染 HTML
+	var req struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// 写入 Cookie 并重定向到首页
+
+	token, err := ac.authSvc.Login(req.Email, req.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 写入 Cookie
 	expireSec := ac.authSvc.GetJWTExpireHours() * 3600
 	c.SetCookie("token", token, expireSec, "/", "", false, true)
-	c.Redirect(http.StatusFound, "/")
+
+	// 返回 JSON，前端收到后 location.href = '/'
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func (ac *AuthController) Status(c *gin.Context) {
@@ -139,4 +148,10 @@ func (ac *AuthController) SendEmailCode(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "验证码已发送"})
+}
+
+func (ac *AuthController) Logout(c *gin.Context) {
+	fmt.Print("Logout called\n")
+	c.SetCookie("token", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"status": "logged out"})
 }

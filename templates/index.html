@@ -25,12 +25,29 @@
       const userAction = document.getElementById('userAction');
 
       if (authenticated) {
-        userAction.innerHTML = `<span class="text-gray-700">${email}</span>`;
+        userAction.innerHTML = `
+          <div class="relative">
+            <button id="userBtn" class="text-gray-700 focus:outline-none">${email}</button>
+            <div id="logoutMenu" class="hidden absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg">
+              <button id="logoutBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100">退出登录</button>
+            </div>
+          </div>`;
+        document.getElementById('userBtn').addEventListener('click', () => {
+          document.getElementById('logoutMenu').classList.toggle('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+          await fetch('/auth/logout', {
+          method: 'POST',
+        });
+        location.href = '/';
+
+        });
       } else {
-        userAction.innerHTML = `<a href="/login.html"
-          class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-          登录
-        </a>`;
+        userAction.innerHTML = `
+          <a href="/login.html"
+            class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+            登录
+          </a>`;
       }
 
       const images = authenticated

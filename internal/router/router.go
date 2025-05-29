@@ -53,6 +53,7 @@ func SetupRouter(cfg *config.Config, logger *zap.Logger) *gin.Engine {
 		api.POST("/password/reset", authCtl.Reset)
 		api.POST("/send-email-code", authCtl.SendEmailCode)
 		api.GET("/auth/status", authCtl.Status)
+		api.POST("/auth/logout", authCtl.Logout)
 	}
 
 	return r
