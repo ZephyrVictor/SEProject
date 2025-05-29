@@ -32,8 +32,9 @@ func SetupRouter(cfg *config.Config, logger *zap.Logger) *gin.Engine {
 	// 加载模板，用于渲染 HTML 页面
 	r.LoadHTMLGlob(filepath.Join(templatesPath, "*.html"))
 
-	// Serve static HTML
-	r.Static("/static", templatesPath)
+	// Serve static files (CSS, JS, images, uploads)
+	// 这里将 /static 指向项目根目录下的 static 文件夹，用于提供上传图片等资源
+	r.Static("/static", filepath.Join(wd, "static"))
 	r.GET("/", func(c *gin.Context) { c.File(filepath.Join(templatesPath, "index.html")) })
 	r.GET("/register.html", func(c *gin.Context) { c.File(filepath.Join(templatesPath, "register.html")) })
 	r.GET("/login.html", func(c *gin.Context) { c.File(filepath.Join(templatesPath, "login.html")) })
