@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/disintegration/imaging"
@@ -76,12 +77,13 @@ func (ic *ImageController) SubmitEdit(c *gin.Context) {
 		img = imaging.Fit(img, ic.Cfg.MaxImageWidth, ic.Cfg.MaxImageWidth, imaging.Lanczos)
 	}
 
-	//保存
+	// 保存图片到本地并构造对外可访问 URL
 	id := uuid.NewString()
 	os.MkdirAll("static/uploads", 0755)
-	path := filepath.Join("static", "uploads", id+".png")
-	imaging.Save(img, path)
-	baseURL := fmt.Sprintf("%s/static/uploads/%s.png", ic.Cfg.BaseUrl, id)
+	savePath := filepath.Join("static", "uploads", id+".png")
+	imaging.Save(img, savePath)
+	// 使用配置中 BaseUrl（请确保 .env: BASE_URL 使用可被 DashScope 访问的公网地址）
+	baseURL := strings.TrimRight(ic.Cfg.BaseUrl, "/") + "/static/uploads/" + id + ".png"
 
 	fn := c.PostForm("function")
 	prompt := c.PostForm("prompt")
@@ -101,11 +103,17 @@ func (ic *ImageController) SubmitEdit(c *gin.Context) {
 		Params:       extras,
 		CreatedAt:    time.Now().Unix(),
 	}
-	//放入db
+	// 放入数据库并保存原图 ID
 	ic.DB.Create(&models.Task{
-		ID: job.ID, ParentID: nil, UserEmail: email,
-		Function: fn, Prompt: prompt, BaseImageURL: baseURL, Status: "QUEUED",
-		CreatedAt: time.Now(),
+		ID:           job.ID,
+		ParentID:     nil,
+		UserEmail:    email,
+		Function:     fn,
+		Prompt:       prompt,
+		BaseImageURL: baseURL,
+		ImageID:      &id,
+		Status:       "QUEUED",
+		CreatedAt:    time.Now(),
 	})
 	ic.Queue.Enqueue(context.Background(), job)
 	c.JSON(http.StatusAccepted, gin.H{"job_id": job.ID})
