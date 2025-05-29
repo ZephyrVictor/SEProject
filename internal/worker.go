@@ -7,6 +7,11 @@ import (
 
 	"awesomeProject/internal/models"
 	"awesomeProject/internal/services"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -65,20 +70,37 @@ func StartImageWorker(ctx context.Context, dashClient *services.DashScopeClient,
 
 					switch status {
 					case "SUCCEEDED":
-						resultURL := ""
+						// 取第一个结果 URL
+						var remoteURL string
 						if len(urls) > 0 {
-							resultURL = urls[0]
+							remoteURL = urls[0]
 						}
-						// 保存结果到数据库
+						// 下载远程结果，保存到本地上传目录
+						localDir := filepath.Join("static", "uploads")
+						os.MkdirAll(localDir, 0755)
+						localName := job.ID + "_res.png"
+						localPath := filepath.Join(localDir, localName)
+						if remoteURL != "" {
+							if resp, err := http.Get(remoteURL); err == nil {
+								defer resp.Body.Close()
+								out, _ := os.Create(localPath)
+								defer out.Close()
+								io.Copy(out, resp.Body)
+							}
+						}
+						// 构造可访问 URL
+						base := strings.TrimRight(models.Cfg.BaseUrl, "/")
+						localURL := base + "/static/uploads/" + localName
+						// 更新数据库状态和结果 URL
 						db.Model(&models.Task{}).Where("id = ?", job.ID).
 							Updates(map[string]interface{}{
 								"status":     "SUCCEEDED",
-								"result_url": resultURL,
+								"result_url": localURL,
 								"updated_at": time.Now(),
 							})
-						// WebSocket 通知
+						// WebSocket 通知客户端
 						NotifyUser(job.UserEmail, map[string]interface{}{
-							"job_id": job.ID, "status": "SUCCEEDED", "url": resultURL,
+							"job_id": job.ID, "status": "SUCCEEDED", "url": localURL,
 						})
 						return
 
