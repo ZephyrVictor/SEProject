@@ -18,6 +18,8 @@ type ImageJob struct {
 	BaseImageURL string                 `json:"base_image_url"`
 	Params       map[string]interface{} `json:"params"`
 	CreatedAt    int64                  `json:"created_at"`
+	// 原始图片 UUID，用于目录组织
+	ImageID string `json:"image_id"`
 }
 
 type TaskQueue struct {

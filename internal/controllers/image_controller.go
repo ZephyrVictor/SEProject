@@ -77,13 +77,16 @@ func (ic *ImageController) SubmitEdit(c *gin.Context) {
 		img = imaging.Fit(img, ic.Cfg.MaxImageWidth, ic.Cfg.MaxImageWidth, imaging.Lanczos)
 	}
 
-	// 保存图片到本地并构造对外可访问 URL
+	// 保存原始图片到按用户和图片ID创建的目录
 	id := uuid.NewString()
-	os.MkdirAll("static/uploads", 0755)
-	savePath := filepath.Join("static", "uploads", id+".png")
-	imaging.Save(img, savePath)
-	// 使用配置中 BaseUrl（请确保 .env: BASE_URL 使用可被 DashScope 访问的公网地址）
-	baseURL := strings.TrimRight(ic.Cfg.BaseUrl, "/") + "/static/uploads/" + id + ".png"
+	// 用邮箱目录索引，替换 @ . 为下划线
+	emailDir := strings.ReplaceAll(strings.ReplaceAll(email, "@", "_"), ".", "_")
+	baseDir := filepath.Join("static", "uploads", emailDir, id)
+	os.MkdirAll(baseDir, 0755)
+	origPath := filepath.Join(baseDir, "original.png")
+	imaging.Save(img, origPath)
+	// 构建可被外部访问的 URL
+	baseURL := strings.TrimRight(ic.Cfg.BaseUrl, "/") + "/static/uploads/" + emailDir + "/" + id + "/original.png"
 
 	fn := c.PostForm("function")
 	prompt := c.PostForm("prompt")
@@ -102,6 +105,7 @@ func (ic *ImageController) SubmitEdit(c *gin.Context) {
 		BaseImageURL: baseURL,
 		Params:       extras,
 		CreatedAt:    time.Now().Unix(),
+		ImageID:      id,
 	}
 	// 放入数据库并保存原图 ID
 	ic.DB.Create(&models.Task{
